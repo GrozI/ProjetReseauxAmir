@@ -18,13 +18,15 @@ int main(int argc, char** argv)
   socklen_t server_size = sizeof(struct sockaddr_in);
   socklen_t client_size = sizeof(struct sockaddr_in);
   int nombre_server = 0;
-
+  int nb_user_connect = 0;
   //Ouverture du fichier où l'on stocke les informations dans le tableau
   //tab_userpuis fermeture du fichier
   table_user *tab_user = open_file();
 
   //Tableau qui sera la liste des serveurs de données
   table_server *list_data_server = malloc(N*sizeof(table_server));
+
+  struct sockaddr_in *list_table_user = malloc(N*sizeof(sockaddr_in));
 
   // User *tab_user_connect = malloc(N*sizeof(User));
   // for(unsigned int p = 0; p < tab_user->nb_utilisateurs; p++)
@@ -117,6 +119,9 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
           }
           connecte = 1;
+          list_table_user[nb_user_connect].addr = client_addr;
+          nb_user_connect++;
+          affiche_user(list_table_user,nb_user_connect);
           break;
         }
       }
@@ -181,7 +186,7 @@ int main(int argc, char** argv)
           // strcpy(list_data_server[nombre_server].type,"taille");
           // nombre_server++;
       }
-
+      memset((char *)&buff, 0, (size_t) N);
       for(i=0; i < tab_user->nb_utilisateurs; i++)
       {
         for(unsigned int j = 0; j< tab_user->table[i].taille_attributs; j++)
@@ -189,6 +194,7 @@ int main(int argc, char** argv)
           if(strcmp(tmp2,tab_user->table[i].attribut[j]) == 0)
           {
             strcat(buff,tab_user->table[i].login);
+            printf("%d = %s\n",i, tab_user->table[i].login);
             strcat(buff,":");
           }
         }

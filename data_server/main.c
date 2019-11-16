@@ -82,6 +82,7 @@ int main(int argc, char**argv)
 
   // il faut je reçois la liste des users !
   strToken = strtok_r(buff,":", &tmp);
+  printf("strtok = %s\n",strToken);
   int i=0;
   while(strToken != NULL)
   {
@@ -89,6 +90,7 @@ int main(int argc, char**argv)
     memset((int*)&tab_user->table[i].age, -1, (size_t) N);
     i++;
     tab_user->nb_utilisateurs++;
+    strToken = strtok_r (NULL,":", &tmp);
   }
 
   for(i=0; i < tab_user->nb_utilisateurs; i++)

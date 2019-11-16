@@ -203,3 +203,15 @@ void affiche(table_server *list_data_server,int nombre_server)
     printf("type = %s\n",list_data_server[i].type);
   }
 }
+
+void affiche_user(struct sockaddr_in *list_table_user,int nb_user_connect)
+{
+  if(nb_user_connect == 0)
+  {
+    printf("Le tableau des serveurs de données connectés est vide\n");
+  }
+  for(int i= 0; i < nombre_server; i++)
+  {
+    printf("port = %d\n",list_table_user[i].addr.sin_port);
+  }
+}
