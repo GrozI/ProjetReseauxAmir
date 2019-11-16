@@ -73,8 +73,15 @@ int main(int argc, char**argv)
   }
   printf("%s\n",buff);
 
+  if(recvfrom(sock_fd, buff, N, 0, (struct sockaddr *)&server_addr, &tailleu) == -1)
+  {
+    perror("recvfrom");
+    return 1;
+  }
+  printf("%s\n",buff);
+
   // il faut je reçois la liste des users !
-/*  strToken = strtok_r(buff, ":", &tmp);
+  strToken = strtok_r(buff,":", &tmp);
   int i=0;
   while(strToken != NULL)
   {
@@ -83,7 +90,13 @@ int main(int argc, char**argv)
     i++;
     tab_user->nb_utilisateurs++;
   }
-*/
+
+  for(i=0; i < tab_user->nb_utilisateurs; i++)
+  {
+    printf("%d = %s\n",i, tab_user->table[i].login);
+    printf("%d = %d\n",i, tab_user->table[i].age);
+  }
+
   while(1)
   {
     memset((char *)&buff, 0, (size_t) N);

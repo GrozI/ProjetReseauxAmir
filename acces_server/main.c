@@ -184,15 +184,16 @@ int main(int argc, char** argv)
 
       for(i=0; i < tab_user->nb_utilisateurs; i++)
       {
-        for(int j = 0; j< taille_attributs; j++)
+        for(unsigned int j = 0; j< tab_user->table[i].taille_attributs; j++)
         {
-          if(strcmp(tmp2,attribut[j]) == 0)
+          if(strcmp(tmp2,tab_user->table[i].attribut[j]) == 0)
           {
-            printf("coucou\n");
+            strcat(buff,tab_user->table[i].login);
+            strcat(buff,":");
           }
         }
       }
-
+      printf("%s\n",buff);
       if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
       {
         perror("erreur sockett sendefrrqz");
