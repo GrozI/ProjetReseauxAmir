@@ -1,0 +1,5 @@
+nom:mdp:age:taille
+tanjiro:eau:age:taille
+lala:ahdodm:age
+amir:amir:age
+bonjour:toi
