@@ -149,22 +149,22 @@ int main(int argc, char** argv)
     {
       strToken = strtok_r (NULL," :", &tmp);
       printf("%s\n",strToken);
-      printf("%ld\n",strlen(strToken));
+      //printf("%ld\n",strlen(strToken));
+      char tmp2[N]="";
       if(strncmp("age",strToken,3) == 0)
       {
-          printf("StrToken en rentrant la boucle strcmp et avant le snprintf : %s\n",strToken);
-          char tmp2[N]="";
           strncpy(tmp2,strToken,3);
+          // printf("StrToken en rentrant la boucle strcmp et avant le snprintf : %s\n",strToken);
           snprintf(buff,N+1024,"Ok tu es le serveur : %s \n",tmp2);
-          printf("StrToken apres le snprintf : %s\n",strToken);
-          printf("buff = %s\n",buff);
+          // printf("StrToken apres le snprintf : %s\n",strToken);
+          //printf("buff = %s\n",buff);
           // printf("toz\n");
           if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
           {
             perror("erreur sockett sendefrrqz");
             exit(EXIT_FAILURE);
           }
-          printf("coucou\n");
+          //printf("coucou\n");
           list_data_server[nombre_server].addr = client_addr;
           strcpy(list_data_server[nombre_server].type,"age");
           // printf("nbs : %d\n",nombre_server);
@@ -173,12 +173,30 @@ int main(int argc, char** argv)
           nombre_server++;
           affiche(list_data_server,nombre_server);
       }
-
+      printf("%s\n",tmp2);
       if(strcmp("taille",strToken) == 0)
       {
+        printf("tailletaile\n");
           // list_data_server[nombre_server].addr = client_addr;
           // strcpy(list_data_server[nombre_server].type,"taille");
           // nombre_server++;
+      }
+
+      for(i=0; i < tab_user->nb_utilisateurs; i++)
+      {
+        for(int j = 0; j< taille_attributs; j++)
+        {
+          if(strcmp(tmp2,attribut[j]) == 0)
+          {
+            printf("coucou\n");
+          }
+        }
+      }
+
+      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+      {
+        perror("erreur sockett sendefrrqz");
+        exit(EXIT_FAILURE);
       }
     }
   }

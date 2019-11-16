@@ -87,7 +87,7 @@ int main(int argc, char**argv)
   while(1)
   {
     memset((char *)&buff, 0, (size_t) N);
-    if(recvfrom(sock_fd, buff, 1024, 0, (struct sockaddr *)&server_addr, &tailleu))
+    if(recvfrom(sock_fd, buff, 1024, 0, (struct sockaddr *)&server_addr, &tailleu) == -1)
     {
       perror("recvfrom");
       return 1;
