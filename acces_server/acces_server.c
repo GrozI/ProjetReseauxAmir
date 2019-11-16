@@ -191,8 +191,12 @@ ssize_t send_message(int sock_fd,char*buf,struct sockaddr_in server_addr)
 //   return tab;
 // }
 
-void affiche(table_server list_data_server,int nombre_server)
+void affiche(table_server *list_data_server,int nombre_server)
 {
+  if(nombre_server == 0)
+  {
+    printf("Le tableau des serveurs de données connectés est vide\n");
+  }
   for(int i= 0; i < nombre_server; i++)
   {
     printf("port = %d\n",list_data_server[i].addr.sin_port);

@@ -167,11 +167,11 @@ int main(int argc, char** argv)
           printf("coucou\n");
           list_data_server[nombre_server].addr = client_addr;
           strcpy(list_data_server[nombre_server].type,"age");
-          printf("nbs : %d\n",nombre_server);
-          printf("port = %d\n",list_data_server[nombre_server].addr.sin_port);
-          printf("type = %s\n",list_data_server[nombre_server].type);
+          // printf("nbs : %d\n",nombre_server);
+          // printf("port = %d\n",list_data_server[nombre_server].addr.sin_port);
+          // printf("type = %s\n",list_data_server[nombre_server].type);
           nombre_server++;
-
+          affiche(list_data_server,nombre_server);
       }
 
       if(strcmp("taille",strToken) == 0)
