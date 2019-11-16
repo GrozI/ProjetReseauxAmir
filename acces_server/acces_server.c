@@ -191,10 +191,11 @@ ssize_t send_message(int sock_fd,char*buf,struct sockaddr_in server_addr)
 //   return tab;
 // }
 
-void affiche(int nombre_server)
+void affiche(table_server list_data_server,int nombre_server)
 {
   for(int i= 0; i < nombre_server; i++)
   {
-
+    printf("port = %d\n",list_data_server[i].addr.sin_port);
+    printf("type = %s\n",list_data_server[i].type);
   }
 }
