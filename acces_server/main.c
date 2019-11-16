@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     printf("strtok = %s\n", strToken);
     printf("buffer = %s\n", tmp);
     //Si strToken est égale à auth alors je rentre dans la boucle
-    if( strncmp("auth",strToken,4) == 0 && parcourir(client_addr,list_table_user,list_data_server,nb_user_connect,nombre_server) == 0)
+    if( strncmp("auth",strToken,4) == 0 && parcourir(sock_fd, buff,client_addr,list_table_user,list_data_server,nb_user_connect,nombre_server) == 0)
     {
 
       //comparer la liste des utilisateurs déjà connecté, si l'user est dans la liste
@@ -150,7 +150,7 @@ int main(int argc, char** argv)
     }
 
     //Si strToken est égale à server_auth alors je rentre dans la boucle
-    if( strcmp("server_auth",strToken) == 0)
+    if( strcmp("server_auth",strToken) == 0 && parcourir(sock_fd, buff,client_addr,list_table_user,list_data_server,nb_user_connect,nombre_server) == 0)
     {
       strToken = strtok_r (NULL," :", &tmp);
       printf("%s\n",strToken);
