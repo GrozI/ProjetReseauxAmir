@@ -210,8 +210,32 @@ void affiche_user(struct sockaddr_in *list_table_user,int nb_user_connect)
   {
     printf("Le tableau des serveurs de données connectés est vide\n");
   }
-  for(int i= 0; i < nombre_server; i++)
+  for(int i= 0; i < nb_user_connect; i++)
   {
-    printf("port = %d\n",list_table_user[i].addr.sin_port);
+    printf("port = %d\n",list_table_user[i].sin_port);
   }
+}
+
+int parcourir(struct sockaddr_in client_addr,struct sockaddr_in *list_table_user,table_server *list_data_server,int nb_user_connect, int nombre_server)
+{
+  int already_connected = 0;
+  for(int i=0; i < nb_user_connect; i++)
+  {
+    if(client_addr.sin_port == list_table_user[i].sin_port)
+    {
+      printf("Vous êtes déjà connecté !\n");
+      already_connected = 1;
+      return 1;
+    }
+  }
+  for(int i=0; i < nombre_server; i++)
+  {
+    if(client_addr.sin_port == list_data_server[i].addr.sin_port)
+    {
+      printf("Vous êtes déjà connecté et en plus vous êtes pas un client!\n");
+      already_connected = 1;
+      return 1;
+    }
+  }
+  return already_connected;
 }

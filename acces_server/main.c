@@ -26,7 +26,7 @@ int main(int argc, char** argv)
   //Tableau qui sera la liste des serveurs de données
   table_server *list_data_server = malloc(N*sizeof(table_server));
 
-  struct sockaddr_in *list_table_user = malloc(N*sizeof(sockaddr_in));
+  struct sockaddr_in *list_table_user = malloc(N*sizeof(struct sockaddr_in));
 
   // User *tab_user_connect = malloc(N*sizeof(User));
   // for(unsigned int p = 0; p < tab_user->nb_utilisateurs; p++)
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     printf("strtok = %s\n", strToken);
     printf("buffer = %s\n", tmp);
     //Si strToken est égale à auth alors je rentre dans la boucle
-    if( strncmp("auth",strToken,4) == 0)
+    if( strncmp("auth",strToken,4) == 0 && parcourir(client_addr,list_table_user,list_data_server,nb_user_connect,nombre_server) == 0)
     {
 
       //comparer la liste des utilisateurs déjà connecté, si l'user est dans la liste
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
           }
           connecte = 1;
-          list_table_user[nb_user_connect].addr = client_addr;
+          list_table_user[nb_user_connect] = client_addr;
           nb_user_connect++;
           affiche_user(list_table_user,nb_user_connect);
           break;
