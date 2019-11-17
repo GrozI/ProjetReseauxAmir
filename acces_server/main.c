@@ -217,12 +217,12 @@ int main(int argc, char** argv)
         {
           //char log[32] = list_table_user[i].login;
           // a l'aide du port on trouve l'uilistaeur et on regarde maintenan si le login est dans le tableau qui a stock les login
-          for(int j = 0; j < nb_utilisateurs; j++)
+          for(unsigned int j = 0; j < tab_user->nb_utilisateurs; j++)
           {
             if(list_table_user[i].login == tab_user->table[j].login)
             {
               //on parcourt la liste des attributs de l'user pour voir si il a le champ dans sa liste des attributs
-              for(int k = 0; k < taille_attributs; k++)
+              for(unsigned int k = 0; k < tab_user->table[j].taille_attributs; k++)
               {
                 if(strcmp(strToken,tab_user->table[j].attribut[k]) == 0)
                 {
