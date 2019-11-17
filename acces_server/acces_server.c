@@ -30,6 +30,11 @@ typedef struct
   char type[32];
 } table_server;
 
+typedef struct
+{
+  struct sockaddr_in addr;
+  char login[32];
+} table_user_connect;
 
 int create_socket()
 {
@@ -204,7 +209,7 @@ void affiche(table_server *list_data_server,int nombre_server)
   }
 }
 
-void affiche_user(struct sockaddr_in *list_table_user,int nb_user_connect)
+void affiche_user(table_user_connect *list_table_user,int nb_user_connect)
 {
   if(nb_user_connect == 0)
   {
@@ -212,16 +217,16 @@ void affiche_user(struct sockaddr_in *list_table_user,int nb_user_connect)
   }
   for(int i= 0; i < nb_user_connect; i++)
   {
-    printf("port = %d\n",list_table_user[i].sin_port);
+    printf("port = %d\n",list_table_user[i].addr.sin_port);
   }
 }
 
-int parcourir(int sock_fd, char buff[N],struct sockaddr_in client_addr,struct sockaddr_in *list_table_user,table_server *list_data_server,int nb_user_connect, int nombre_server)
+int parcourir(int sock_fd, char buff[N],struct sockaddr_in client_addr,table_user_connect *list_table_user,table_server *list_data_server,int nb_user_connect, int nombre_server)
 {
   int already_connected = 0;
   for(int i=0; i < nb_user_connect; i++)
   {
-    if(client_addr.sin_port == list_table_user[i].sin_port)
+    if(client_addr.sin_port == list_table_user[i].addr.sin_port)
     {
       snprintf(buff,N,"Vous êtes déjà connecté !\n");
       if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)

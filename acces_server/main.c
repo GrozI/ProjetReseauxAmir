@@ -26,7 +26,7 @@ int main(int argc, char** argv)
   //Tableau qui sera la liste des serveurs de données
   table_server *list_data_server = malloc(N*sizeof(table_server));
 
-  struct sockaddr_in *list_table_user = malloc(N*sizeof(struct sockaddr_in));
+  table_user_connect *list_table_user = malloc(N*sizeof(table_user_connect));
 
   // User *tab_user_connect = malloc(N*sizeof(User));
   // for(unsigned int p = 0; p < tab_user->nb_utilisateurs; p++)
@@ -119,7 +119,8 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
           }
           connecte = 1;
-          list_table_user[nb_user_connect] = client_addr;
+          list_table_user[nb_user_connect].addr = client_addr;
+          strcpy(list_table_user[nb_user_connect].login,tmp_login);
           nb_user_connect++;
           affiche_user(list_table_user,nb_user_connect);
           break;
@@ -206,6 +207,66 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
       }
     }
+    if(strcmp("lire",strToken) == 0)
+    {
+      strToken = strtok_r (NULL," :", &tmp);
+      //on regarde le port du client pour le trouver dans la liste des users connect
+      for(int i=0; i < nb_user_connect; i++)
+      {
+        if(client_addr.sin_port == list_table_user[i].addr.sin_port)
+        {
+          //char log[32] = list_table_user[i].login;
+          // a l'aide du port on trouve l'uilistaeur et on regarde maintenan si le login est dans le tableau qui a stock les login
+          for(int j = 0; j < nb_utilisateurs; j++)
+          {
+            if(list_table_user[i].login == tab_user->table[j].login)
+            {
+              //on parcourt la liste des attributs de l'user pour voir si il a le champ dans sa liste des attributs
+              for(int k = 0; k < taille_attributs; k++)
+              {
+                if(strcmp(strToken,tab_user->table[j].attribut[k]) == 0)
+                {
+                  //envoyer au client qui a le droit de lire l'attribut
+                  snprintf(buff,N,"OK vous avez le droit de lire %s\n",strToken);
+                  if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                  {
+                    perror("erreur sockett sendefrrqz");
+                    exit(EXIT_FAILURE);
+                  }
+                  //envoyer au BON serveur de donnée la requêtre
+                  for(int h = 0; h < nombre_server; h++)
+                  { //envoi de la commande et attente du resultat
+                    if(list_data_server[h].type == strToken)
+                    {
+                      snprintf(buff,N,"lire %s\n",strToken);
+
+                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                      {
+                        perror("erreur sockett sendefrrqz");
+                        exit(EXIT_FAILURE);
+                      }
+
+                      if (recvfrom(sock_fd, buff, N, 0, (struct sockaddr *)&client_addr, &client_size) == -1)
+                      {
+                        perror("recvfrom");
+                        return 1;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      snprintf(buff,N,"PAS OK vous ne pouvez pas lire %s\n",strToken);
+      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+      {
+        perror("erreur sockett sendefrrqz");
+        exit(EXIT_FAILURE);
+      }
+    }
+
   }
 
   printf("***** Serveur hors ligne *****\n\n");
