@@ -101,8 +101,9 @@ int main(int argc, char** argv)
       //et on envoi le message
       strToken = strtok_r (NULL,":", &tmp);
       printf("coucou  je suis : %s\n",strToken);
-      char* tmp_login="";
-      strcpy(tmp_login,strToken);
+      char tmp_login[N]="";
+      strncpy(tmp_login,strToken,strlen(strToken));
+      printf("strtok = %s\n",tmp_login);
       strToken = strtok_r (NULL,":", &tmp);
       for(i=0; i < tab_user->nb_utilisateurs; i++)
       {
@@ -228,6 +229,7 @@ int main(int argc, char** argv)
           for(unsigned int j = 0; j < tab_user->nb_utilisateurs; j++)
           {
             printf("login = %s\n",list_table_user[i].login);
+            printf("login2 = %s\n",tab_user->table[j].login);
             if(list_table_user[i].login == tab_user->table[j].login)
             {
               printf("login ok\n");
