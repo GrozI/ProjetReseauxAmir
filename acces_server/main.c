@@ -215,8 +215,9 @@ int main(int argc, char** argv)
     }
     if(strcmp("lire",strToken) == 0)
     {
+      char tmp_lire[N]="";
       affiche_user(list_table_user,nb_user_connect);
-      strToken = strtok_r (NULL," :", &tmp);
+      strToken = strtok_r (NULL," :\n", &tmp);
       printf("strttttok = %s\n",strToken);
       //on regarde le port du client pour le trouver dans la liste des users connect
       for(int i=0; i < nb_user_connect; i++)
@@ -235,12 +236,16 @@ int main(int argc, char** argv)
               for(unsigned int k = 0; k < tab_user->table[j].taille_attributs; k++)
               {
                 printf("log = %s\n",tab_user->table[j].login);
-                printf("attr = %s\n",tab_user->table[j].attribut[k]);
-                printf("kkkk = %s\n", strToken);
-                if(strcmp(strToken,tab_user->table[j].attribut[k]) == 0)
+                printf("attr = %s %ld\n",tab_user->table[j].attribut[k],strlen(tab_user->table[j].attribut[k]));
+                printf("kkkk = %s %ld\n", strToken, strlen(strToken));
+                if(strncmp(strToken,tab_user->table[j].attribut[k],strlen(strToken)) == 0)
                 {
+                  printf("toktok = %s\n",strToken);
+                  printf("okokokokokokok\n");
+                  strncpy(tmp_lire,strToken,strlen(strToken));
+                  printf("tmp_lire = %s\n",tmp_lire);
                   //envoyer au client qui a le droit de lire l'attribut
-                  snprintf(buff,N,"OK vous avez le droit de lire %s\n",strToken);
+                  snprintf(buff,N+1024,"OK vous avez le droit de lire %s\n",tmp_lire);
                   if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
                   {
                     perror("erreur sockett sendefrrqz");
@@ -249,10 +254,11 @@ int main(int argc, char** argv)
                   //envoyer au BON serveur de donnée la requêtre
                   for(int h = 0; h < nombre_server; h++)
                   { //envoi de la commande et attente du resultat
-                    if(list_data_server[h].type == strToken)
+                    if(strcmp(list_data_server[h].type,tmp_lire) == 0)
                     {
-                      snprintf(buff,N,"lire %s\n",strToken);
-
+                      printf("okokokokokokok2\n");
+                      snprintf(buff,N+1024,"lire %s\n",tmp_lire);
+                      client_addr.sin_port = list_data_server[h].addr.sin_port;
                       if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
                       {
                         perror("erreur sockett sendefrrqz");
