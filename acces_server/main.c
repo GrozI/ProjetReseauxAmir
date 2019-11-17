@@ -228,14 +228,13 @@ int main(int argc, char** argv)
           // a l'aide du port on trouve l'uilistaeur et on regarde maintenan si le login est dans le tableau qui a stock les login
           for(unsigned int j = 0; j < tab_user->nb_utilisateurs; j++)
           {
-            printf("login = %s\n",list_table_user[i].login);
-            printf("login2 = %s\n",tab_user->table[j].login);
-            if(list_table_user[i].login == tab_user->table[j].login)
+            if(strcmp(list_table_user[i].login,tab_user->table[j].login))
             {
               printf("login ok\n");
               //on parcourt la liste des attributs de l'user pour voir si il a le champ dans sa liste des attributs
               for(unsigned int k = 0; k < tab_user->table[j].taille_attributs; k++)
               {
+                printf("kkkk = %s\n", strToken);
                 if(strcmp(strToken,tab_user->table[j].attribut[k]) == 0)
                 {
                   //envoyer au client qui a le droit de lire l'attribut
