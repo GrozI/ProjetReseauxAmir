@@ -257,14 +257,18 @@ int main(int argc, char** argv)
                     if(strcmp(list_data_server[h].type,tmp_lire) == 0)
                     {
                       printf("okokokokokokok2\n");
+                      affiche(list_data_server,nombre_server);
                       snprintf(buff,N+1024,"lire %s\n",tmp_lire);
+                      printf("client addr port : %d\n", client_addr.sin_port);
                       client_addr.sin_port = list_data_server[h].addr.sin_port;
+                      printf("client addr port : %d\n", client_addr.sin_port);
+                      printf("server port : %d\n",list_data_server[h].addr.sin_port);
                       if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
                       {
                         perror("erreur sockett sendefrrqz");
                         exit(EXIT_FAILURE);
                       }
-
+                      printf("aaaaaaaaaaaaa\n");
                       if (recvfrom(sock_fd, buff, N, 0, (struct sockaddr *)&client_addr, &client_size) == -1)
                       {
                         perror("recvfrom");

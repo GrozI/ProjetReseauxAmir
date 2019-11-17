@@ -107,6 +107,7 @@ int main(int argc, char**argv)
       perror("recvfrom");
       return 1;
     }
+    printf("buff = %s\n",buff);
     strToken = strtok_r(buff, ":", &tmp);
     // if(strcmp(NULL,strToken) == 0)
     // {
