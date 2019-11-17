@@ -362,7 +362,7 @@ int main(int argc, char** argv)
                     {
                       printf("okokokokokokok2\n");
                       affiche(list_data_server,nombre_server);
-                      snprintf(buff,N+1024,"%s.%s\n",strToken2,tab_user->table[j].login);
+                      snprintf(buff,N+1024,"ecrire %s.%s\n",strToken2,tab_user->table[j].login);
                       printf("buff = %s",buff);
                       printf("client addr port : %d\n", client_addr.sin_port);
                       //client_addr.sin_port = list_data_server[h].addr.sin_port;

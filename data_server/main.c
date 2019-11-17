@@ -111,8 +111,8 @@ int main(int argc, char**argv)
     }
     printf("buff = %s\n",buff);
     printf("ffffffffffffff\n");
-    strToken = strtok_r(buff, " :", &tmp);
-    printf("toktok = %s\n",strToken);
+    strToken = strtok_r(buff, " :\n", &tmp);
+    printf("toktok = %s %ld\n",strToken,strlen(strToken));
     // if(strcmp(NULL,strToken) == 0)
     // {
     //   printf("RIP\n");
@@ -144,6 +144,19 @@ int main(int argc, char**argv)
     if(strncmp("ecrire",strToken,6) == 0)
     {
       printf("je suis dans ecrire\n");
+      printf("tmp = %s",tmp);
+      char *strToken2 = strtok(tmp,":.");
+      printf("strToken2 = %s",strToken2);
+      char *strToken3 = strtok(NULL,":");
+      printf("strToken3 = %s",strToken3);
+      char *strToken4 = strtok(NULL,":");
+      printf("strToken3 = %s",strToken4);
+      for(int i = 0; i < tab_user->nb_utilisateurs; i++)
+      {
+        if(strcmp(strToken3,tab_user->table[i].login) == 0)
+        {
+        }
+      }
     }
 
   }
