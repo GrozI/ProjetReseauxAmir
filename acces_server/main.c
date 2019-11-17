@@ -84,8 +84,8 @@ int main(int argc, char** argv)
     printf("%s\n",buff);
     //On prend le premier mot du message et on l'affiche
     strToken = strtok_r(buff, " :", &tmp);
-    printf("strtok = %s\n", strToken);
-    printf("buffer = %s\n", tmp);
+    // printf("strtok = %s\n", strToken);
+    // printf("buffer = %s\n", tmp);
     //Si strToken est égale à auth alors je rentre dans la boucle
     if( strncmp("auth",strToken,4) == 0 && parcourir(sock_fd, buff,client_addr,list_table_user,list_data_server,nb_user_connect,nombre_server) == 0)
     {
@@ -100,10 +100,10 @@ int main(int argc, char** argv)
       //puis on va parcourir le tableau pour voir si user est dedans ou non
       //et on envoi le message
       strToken = strtok_r (NULL,":", &tmp);
-      printf("coucou  je suis : %s\n",strToken);
+      // printf("coucou  je suis : %s\n",strToken);
       char tmp_login[N]="";
       strncpy(tmp_login,strToken,strlen(strToken));
-      printf("strtok = %s\n",tmp_login);
+      // printf("strtok = %s\n",tmp_login);
       strToken = strtok_r (NULL,":", &tmp);
       for(i=0; i < tab_user->nb_utilisateurs; i++)
       {
@@ -114,19 +114,19 @@ int main(int argc, char** argv)
 
         if( (strcmp(tmp_login,tab_user->table[i].login) == 0) && (strcmp(strToken,tab_user->table[i].mdp) ==0))
         {
-          printf("logintable = %s\n",tab_user->table[i].login);
-          printf("mdptable = %s\n",tab_user->table[i].mdp);
-          printf("tmplog = %s\n",tmp_login);
+          // printf("logintable = %s\n",tab_user->table[i].login);
+          // printf("mdptable = %s\n",tab_user->table[i].mdp);
+          // printf("tmplog = %s\n",tmp_login);
           snprintf(buff,N,"OK: vous êtes connectés au serveur !\n");
           if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
           {
             perror("erreur sockett sendefrrqz");
             exit(EXIT_FAILURE);
           }
-          printf("tmplog2 = %s\n",tmp_login);
+          //printf("tmplog2 = %s\n",tmp_login);
           connecte = 1;
           //list_table_user[nb_user_connect].addr = client_addr;
-          copie(list_table_user[nb_user_connect].addr,client_addr);
+          copie(&list_table_user[nb_user_connect].addr,&client_addr);
           strcpy(list_table_user[nb_user_connect].login,tmp_login);
           nb_user_connect++;
           affiche_user(list_table_user,nb_user_connect);
@@ -178,7 +178,7 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
           }
           //printf("coucou\n");
-          copie(list_data_server[nombre_server].addr,client_addr);
+          copie(&list_data_server[nombre_server].addr,&client_addr);
           //list_data_server[nombre_server].addr = client_addr;
           strcpy(list_data_server[nombre_server].type,"age");
           // printf("nbs : %d\n",nombre_server);

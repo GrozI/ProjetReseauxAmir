@@ -256,9 +256,16 @@ int parcourir(int sock_fd, char buff[N],struct sockaddr_in client_addr,table_use
   return already_connected;
 }
 
-void copie(struct sockaddr_in addr1, struct sockaddr_in addr2)
+void copie(struct sockaddr_in *addr1, struct sockaddr_in *addr2)
 {
-  addr2.sin_family = addr1.sin_family;
-  addr2.sin_port = addr1.sin_port;
-  addr2.sin_addr.s_addr = addr1.sin_addr.s_addr;
+  addr2 = malloc(sizeof(struct sockaddr_in));
+  addr2->sin_family = addr1->sin_family;
+  printf("family :%d\n",addr1->sin_family);
+  printf("family :%d\n",addr2->sin_family);
+  addr2->sin_port = addr1->sin_port;
+  printf("port :%d\n",addr1->sin_port);
+  printf("port :%d\n",addr2->sin_port);
+  addr2->sin_addr.s_addr = addr1->sin_addr.s_addr;
+  printf("addr :%d\n",addr1->sin_family);
+  printf("addr :%d\n",addr2->sin_family);
 }
