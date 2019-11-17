@@ -356,12 +356,11 @@ int main(int argc, char** argv)
                   //envoyer au BON serveur de donnée la requêtre
                   for(int h = 0; h < nombre_server; h++)
                   { //envoi de la commande et attente du resultat
-                    printf("toto = %s\n");
                     if(strcmp(list_data_server[h].type,tmp2_ecrire) == 0)
                     {
                       printf("okokokokokokok2\n");
                       affiche(list_data_server,nombre_server);
-                      snprintf(buff,N+1024,"%s\n",tmp_ecrire);
+                      snprintf(buff,N+1024,"%s.%s\n",tmp_ecrire,tab_user->table[j].login);
                       printf("client addr port : %d\n", client_addr.sin_port);
                       //client_addr.sin_port = list_data_server[h].addr.sin_port;
                       printf("client addr port : %d\n", client_addr.sin_port);

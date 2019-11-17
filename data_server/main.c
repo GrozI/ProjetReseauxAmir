@@ -141,6 +141,10 @@ int main(int argc, char**argv)
           return 1;
       }
     }
+    if(strncmp("ecrire",strToken,6) == 0)
+    {
+      printf("je suis dans ecrire\n");
+    }
 
   }
   printf("aaaaaaa\n");
