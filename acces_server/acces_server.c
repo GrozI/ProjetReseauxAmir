@@ -218,6 +218,7 @@ void affiche_user(table_user_connect *list_table_user,int nb_user_connect)
   for(int i= 0; i < nb_user_connect; i++)
   {
     printf("port = %d\n",list_table_user[i].addr.sin_port);
+    printf("login = %s\n",list_table_user[i].login);
   }
 }
 

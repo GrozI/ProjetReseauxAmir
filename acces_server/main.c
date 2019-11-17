@@ -101,7 +101,8 @@ int main(int argc, char** argv)
       //et on envoi le message
       strToken = strtok_r (NULL,":", &tmp);
       printf("coucou  je suis : %s\n",strToken);
-      char* tmp_login = strToken;
+      char* tmp_login="";
+      strcpy(tmp_login,strToken);
       strToken = strtok_r (NULL,":", &tmp);
       for(i=0; i < tab_user->nb_utilisateurs; i++)
       {
@@ -112,12 +113,16 @@ int main(int argc, char** argv)
 
         if( (strcmp(tmp_login,tab_user->table[i].login) == 0) && (strcmp(strToken,tab_user->table[i].mdp) ==0))
         {
+          printf("logintable = %s\n",tab_user->table[i].login);
+          printf("mdptable = %s\n",tab_user->table[i].mdp);
+          printf("tmplog = %s\n",tmp_login);
           snprintf(buff,N,"OK: vous êtes connectés au serveur !\n");
           if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
           {
             perror("erreur sockett sendefrrqz");
             exit(EXIT_FAILURE);
           }
+          printf("tmplog2 = %s\n",tmp_login);
           connecte = 1;
           list_table_user[nb_user_connect].addr = client_addr;
           strcpy(list_table_user[nb_user_connect].login,tmp_login);
@@ -209,18 +214,23 @@ int main(int argc, char** argv)
     }
     if(strcmp("lire",strToken) == 0)
     {
+      affiche_user(list_table_user,nb_user_connect);
       strToken = strtok_r (NULL," :", &tmp);
+      printf("strttttok = %s\n",strToken);
       //on regarde le port du client pour le trouver dans la liste des users connect
       for(int i=0; i < nb_user_connect; i++)
       {
         if(client_addr.sin_port == list_table_user[i].addr.sin_port)
         {
+          printf("port ok\n");
           //char log[32] = list_table_user[i].login;
           // a l'aide du port on trouve l'uilistaeur et on regarde maintenan si le login est dans le tableau qui a stock les login
           for(unsigned int j = 0; j < tab_user->nb_utilisateurs; j++)
           {
+            printf("login = %s\n",list_table_user[i].login);
             if(list_table_user[i].login == tab_user->table[j].login)
             {
+              printf("login ok\n");
               //on parcourt la liste des attributs de l'user pour voir si il a le champ dans sa liste des attributs
               for(unsigned int k = 0; k < tab_user->table[j].taille_attributs; k++)
               {
@@ -259,12 +269,12 @@ int main(int argc, char** argv)
           }
         }
       }
-      snprintf(buff,N,"PAS OK vous ne pouvez pas lire %s\n",strToken);
-      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
-      {
-        perror("erreur sockett sendefrrqz");
-        exit(EXIT_FAILURE);
-      }
+      // snprintf(buff,N,"PAS OK vous ne pouvez pas lire %s\n",strToken);
+      // if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+      // {
+      //   perror("erreur sockett sendefrrqz");
+      //   exit(EXIT_FAILURE);
+      // }
     }
 
   }
