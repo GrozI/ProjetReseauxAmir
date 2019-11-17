@@ -263,12 +263,13 @@ int main(int argc, char** argv)
                       client_addr.sin_port = list_data_server[h].addr.sin_port;
                       printf("client addr port : %d\n", client_addr.sin_port);
                       printf("server port : %d\n",list_data_server[h].addr.sin_port);
-                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&list_data_server[h], sizeof(list_data_server))) == -1)
                       {
                         perror("erreur sockett sendefrrqz");
                         exit(EXIT_FAILURE);
                       }
                       printf("aaaaaaaaaaaaa\n");
+                      printf("client addr port : %d\n", client_addr.sin_port);
                       if (recvfrom(sock_fd, buff, N, 0, (struct sockaddr *)&client_addr, &client_size) == -1)
                       {
                         perror("recvfrom");
