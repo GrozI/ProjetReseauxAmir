@@ -236,6 +236,7 @@ int main(int argc, char** argv)
             {
               printf("login ok\n");
               //on parcourt la liste des attributs de l'user pour voir si il a le champ dans sa liste des attributs
+              int test = 0;
               for(unsigned int k = 0; k < tab_user->table[j].taille_attributs; k++)
               {
                 printf("log = %s\n",tab_user->table[j].login);
@@ -243,6 +244,7 @@ int main(int argc, char** argv)
                 printf("kkkk = %s %ld\n", strToken, strlen(strToken));
                 if(strncmp(strToken,tab_user->table[j].attribut[k],strlen(strToken)) == 0)
                 {
+                  test = 1;
                   printf("toktok = %s\n",strToken);
                   printf("okokokokokokok\n");
                   strncpy(tmp_lire,strToken,strlen(strToken));
@@ -291,18 +293,114 @@ int main(int argc, char** argv)
                   }
                 }
               }
+              if(test == 0)
+              {
+                snprintf(buff,N,"Vous ne pouvez pas lire %s\n",strToken);
+                if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                {
+                  perror("erreur sockett sendefrrqz");
+                  exit(EXIT_FAILURE);
+                }
+              }
             }
           }
         }
       }
-      // snprintf(buff,N,"PAS OK vous ne pouvez pas lire %s\n",strToken);
-      // if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
-      // {
-      //   perror("erreur sockett sendefrrqz");
-      //   exit(EXIT_FAILURE);
-      // }
+
     }
-    
+    if(strcmp("ecrire",strToken) == 0)
+    {
+      char tmp_ecrire[N]="";
+      affiche_user(list_table_user,nb_user_connect);
+      strToken = strtok_r (NULL," :\n", &tmp);
+      strcpy(tmp_ecrire,strToken);
+      strToken = strtok_r (NULL," :\n", &tmp);
+      printf("strttttok2 = %s\n",strToken);
+      //on regarde le port du client pour le trouver dans la liste des users connect
+      for(int i=0; i < nb_user_connect; i++)
+      {
+        if(client_addr.sin_port == list_table_user[i].addr.sin_port)
+        {
+          printf("port2 ok\n");
+          //char log[32] = list_table_user[i].login;
+          // a l'aide du port on trouve l'uilistaeur et on regarde maintenan si le login est dans le tableau qui a stock les login
+          for(unsigned int j = 0; j < tab_user->nb_utilisateurs; j++)
+          {
+            if(strcmp(list_table_user[i].login,tab_user->table[j].login) == 0)
+            {
+              printf("login2 ok\n");
+              //on parcourt la liste des attributs de l'user pour voir si il a le champ dans sa liste des attributs
+              int test = 0;
+              for(unsigned int k = 0; k < tab_user->table[j].taille_attributs; k++)
+              {
+                printf("log2 = %s\n",tab_user->table[j].login);
+                printf("attr2 = %s %ld\n",tab_user->table[j].attribut[k],strlen(tab_user->table[j].attribut[k]));
+                printf("kkkk2 = %s %ld\n", strToken, strlen(strToken));
+                if(strncmp(strToken,tab_user->table[j].attribut[k],strlen(strToken)) == 0)
+                {
+                  test = 1;
+                  printf("toktok2 = %s\n",strToken);
+                  printf("okokokokokokok2\n");
+                  //strncpy(tmp_ecrire,strToken,strlen(strToken));
+                  printf("tmp_ecrire = %s\n",tmp_ecrire);
+                  //envoyer au client qui a le droit de lire l'attribut
+                  snprintf(buff,N+1024,"OK vous avez le droit d'ecrire %s\n",strToken);
+                  if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                  {
+                    perror("erreur sockett sendefrrqz");
+                    exit(EXIT_FAILURE);
+                  }
+                  //envoyer au BON serveur de donnée la requêtre
+                  for(int h = 0; h < nombre_server; h++)
+                  { //envoi de la commande et attente du resultat
+                    if(strcmp(list_data_server[h].type,strToken) == 0)
+                    {
+                      printf("okokokokokokok2\n");
+                      affiche(list_data_server,nombre_server);
+                      snprintf(buff,N+1024,"%s\n",tmp_ecrire);
+                      printf("client addr port : %d\n", client_addr.sin_port);
+                      //client_addr.sin_port = list_data_server[h].addr.sin_port;
+                      printf("client addr port : %d\n", client_addr.sin_port);
+                      printf("server port : %d\n",list_data_server[h].addr.sin_port);
+                      printf("buff = %s\n",buff);
+                      client_addr = list_data_server[h].addr;
+                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                      {
+                        perror("erreur sockett sendefrrqz");
+                        exit(EXIT_FAILURE);
+                      }
+                      printf("aaaaaaaaaaaaa\n");
+                      printf("client addr port : %d\n", client_addr.sin_port);
+                      if (recvfrom(sock_fd, buff, N, 0, (struct sockaddr *)&client_addr, &client_size) == -1)
+                      {
+                        perror("recvfrom");
+                        return 1;
+                      }
+                      printf("%s\n",buff);
+                      client_addr = list_table_user[i].addr;
+                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                      {
+                        perror("erreur sockett sendefrrqz");
+                        exit(EXIT_FAILURE);
+                      }
+                    }
+                  }
+                }
+              }
+              if(test == 0)
+              {
+                snprintf(buff,N,"Vous ne pouvez pas lire %s\n",strToken);
+                if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                {
+                  perror("erreur sockett sendefrrqz");
+                  exit(EXIT_FAILURE);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
 
   }
 
