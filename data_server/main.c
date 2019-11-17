@@ -111,28 +111,30 @@ int main(int argc, char**argv)
     }
     printf("buff = %s\n",buff);
     printf("ffffffffffffff\n");
-    strToken = strtok_r(buff, ":", &tmp);
+    strToken = strtok_r(buff, " :", &tmp);
+    printf("toktok = %s\n",strToken);
     // if(strcmp(NULL,strToken) == 0)
     // {
     //   printf("RIP\n");
     //   return 1;
     // }
-    printf("ggggggggggggggg\n");
-    if(strcmp("lire",strToken) == 0)
+    if(strncmp("lire",strToken,4) == 0)
     {
+      printf("ggggggggggggggg\n");
       memset((char *)&buff, 0, (size_t) N);
       for(int i = 0; i < tab_user->nb_utilisateurs; i++)
       {
         if(tab_user->table[i].age == -1)
         {
-          sprintf(tmp_age,"%s:unknown;",tab_user->table[i].login);
+          sprintf(tmp_age,"%s:unknown\n",tab_user->table[i].login);
         }
         else
         {
-          sprintf(tmp_age,"%s:%u;",tab_user->table[i].login,tab_user->table[i].age);
+          sprintf(tmp_age,"%s:%u\n",tab_user->table[i].login,tab_user->table[i].age);
         }
         strcat(buff,tmp_age);
       }
+      printf("buff = %s",buff);
       if (sendto(sock_fd,buff,N, 0, (struct sockaddr *)&server_addr, tailleu) == -1)
       {
           perror("RIP");

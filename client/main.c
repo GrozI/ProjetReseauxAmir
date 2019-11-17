@@ -89,7 +89,7 @@ int main(int argc, char**argv)
               exit(EXIT_SUCCESS);
             }
 
-            printf("buff = %s\n", buff);
+            printf("%s\n", buff);
           }
 
           if(FD_ISSET(0,&ensemble))

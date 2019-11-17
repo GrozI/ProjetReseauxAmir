@@ -280,6 +280,13 @@ int main(int argc, char** argv)
                         perror("recvfrom");
                         return 1;
                       }
+                      printf("%s\n",buff);
+                      client_addr = list_table_user[i].addr;
+                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                      {
+                        perror("erreur sockett sendefrrqz");
+                        exit(EXIT_FAILURE);
+                      }
                     }
                   }
                 }
@@ -295,6 +302,7 @@ int main(int argc, char** argv)
       //   exit(EXIT_FAILURE);
       // }
     }
+    
 
   }
 
