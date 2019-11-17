@@ -311,9 +311,11 @@ int main(int argc, char** argv)
     if(strcmp("ecrire",strToken) == 0)
     {
       char tmp_ecrire[N]="";
+      char tmp2_ecrire[N]="";
       affiche_user(list_table_user,nb_user_connect);
-      strToken = strtok_r (NULL," :\n", &tmp);
-      strcpy(tmp_ecrire,strToken);
+      //strToken = strtok_r (NULL," :\n", &tmp);
+      strcpy(tmp_ecrire,tmp);
+      printf("strttttok4 = %s\n",tmp_ecrire);
       strToken = strtok_r (NULL," :\n", &tmp);
       printf("strttttok2 = %s\n",strToken);
       //on regarde le port du client pour le trouver dans la liste des users connect
@@ -344,6 +346,7 @@ int main(int argc, char** argv)
                   //strncpy(tmp_ecrire,strToken,strlen(strToken));
                   printf("tmp_ecrire = %s\n",tmp_ecrire);
                   //envoyer au client qui a le droit de lire l'attribut
+                  strcpy(tmp2_ecrire,strToken);
                   snprintf(buff,N+1024,"OK vous avez le droit d'ecrire %s\n",strToken);
                   if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
                   {
@@ -353,7 +356,8 @@ int main(int argc, char** argv)
                   //envoyer au BON serveur de donnée la requêtre
                   for(int h = 0; h < nombre_server; h++)
                   { //envoi de la commande et attente du resultat
-                    if(strcmp(list_data_server[h].type,strToken) == 0)
+                    printf("toto = %s\n");
+                    if(strcmp(list_data_server[h].type,tmp2_ecrire) == 0)
                     {
                       printf("okokokokokokok2\n");
                       affiche(list_data_server,nombre_server);
