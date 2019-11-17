@@ -92,28 +92,32 @@ int main(int argc, char**argv)
     tab_user->nb_utilisateurs++;
     strToken = strtok_r (NULL,":", &tmp);
   }
-
+  printf("coucou\n");
   for(i=0; i < tab_user->nb_utilisateurs; i++)
   {
     printf("%d = %s\n",i, tab_user->table[i].login);
     printf("%d = %d\n",i, tab_user->table[i].age);
   }
-
+  printf("dddddddddd\n");
   while(1)
   {
+    printf("bbbbbbbbbb\n");
     memset((char *)&buff, 0, (size_t) N);
+    printf("ccccccccc\n");
     if(recvfrom(sock_fd, buff, 1024, 0, (struct sockaddr *)&server_addr, &tailleu) == -1)
     {
       perror("recvfrom");
       return 1;
     }
     printf("buff = %s\n",buff);
+    printf("ffffffffffffff\n");
     strToken = strtok_r(buff, ":", &tmp);
     // if(strcmp(NULL,strToken) == 0)
     // {
     //   printf("RIP\n");
     //   return 1;
     // }
+    printf("ggggggggggggggg\n");
     if(strcmp("lire",strToken) == 0)
     {
       memset((char *)&buff, 0, (size_t) N);
@@ -137,6 +141,7 @@ int main(int argc, char**argv)
     }
 
   }
+  printf("aaaaaaa\n");
   close(sock_fd);
 
   return EXIT_SUCCESS;

@@ -89,7 +89,6 @@ int main(int argc, char** argv)
     //Si strToken est égale à auth alors je rentre dans la boucle
     if( strncmp("auth",strToken,4) == 0 && parcourir(sock_fd, buff,client_addr,list_table_user,list_data_server,nb_user_connect,nombre_server) == 0)
     {
-
       //comparer la liste des utilisateurs déjà connecté, si l'user est dans la liste
       //on envoit vous êtes déjà connecté et on break
 
@@ -126,7 +125,8 @@ int main(int argc, char** argv)
           //printf("tmplog2 = %s\n",tmp_login);
           connecte = 1;
           //list_table_user[nb_user_connect].addr = client_addr;
-          copie(&list_table_user[nb_user_connect].addr,&client_addr);
+          //&list_table_user[nb_user_connect].addr = malloc(sizeof(struct sockaddr_in));
+          copie(&client_addr,&list_table_user[nb_user_connect].addr);
           strcpy(list_table_user[nb_user_connect].login,tmp_login);
           nb_user_connect++;
           affiche_user(list_table_user,nb_user_connect);
@@ -178,7 +178,8 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
           }
           //printf("coucou\n");
-          copie(&list_data_server[nombre_server].addr,&client_addr);
+          //&list_data_server[nombre_server].addr = malloc(sizeof(struct sockaddr_in));
+          copie(&client_addr,&list_data_server[nombre_server].addr);
           //list_data_server[nombre_server].addr = client_addr;
           strcpy(list_data_server[nombre_server].type,"age");
           // printf("nbs : %d\n",nombre_server);
@@ -265,6 +266,7 @@ int main(int argc, char** argv)
                       //client_addr.sin_port = list_data_server[h].addr.sin_port;
                       printf("client addr port : %d\n", client_addr.sin_port);
                       printf("server port : %d\n",list_data_server[h].addr.sin_port);
+                      printf("buff = %s\n",buff);
                       client_addr = list_data_server[h].addr;
                       if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
                       {
