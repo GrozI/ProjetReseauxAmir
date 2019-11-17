@@ -125,7 +125,8 @@ int main(int argc, char** argv)
           }
           printf("tmplog2 = %s\n",tmp_login);
           connecte = 1;
-          list_table_user[nb_user_connect].addr = client_addr;
+          //list_table_user[nb_user_connect].addr = client_addr;
+          copie(list_table_user[nb_user_connect].addr,client_addr);
           strcpy(list_table_user[nb_user_connect].login,tmp_login);
           nb_user_connect++;
           affiche_user(list_table_user,nb_user_connect);
@@ -177,7 +178,8 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
           }
           //printf("coucou\n");
-          list_data_server[nombre_server].addr = client_addr;
+          copie(list_data_server[nombre_server].addr,client_addr);
+          //list_data_server[nombre_server].addr = client_addr;
           strcpy(list_data_server[nombre_server].type,"age");
           // printf("nbs : %d\n",nombre_server);
           // printf("port = %d\n",list_data_server[nombre_server].addr.sin_port);
@@ -260,10 +262,11 @@ int main(int argc, char** argv)
                       affiche(list_data_server,nombre_server);
                       snprintf(buff,N+1024,"lire %s\n",tmp_lire);
                       printf("client addr port : %d\n", client_addr.sin_port);
-                      client_addr.sin_port = list_data_server[h].addr.sin_port;
+                      //client_addr.sin_port = list_data_server[h].addr.sin_port;
                       printf("client addr port : %d\n", client_addr.sin_port);
                       printf("server port : %d\n",list_data_server[h].addr.sin_port);
-                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&list_data_server[h], sizeof(list_data_server))) == -1)
+                      client_addr = list_data_server[h].addr;
+                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
                       {
                         perror("erreur sockett sendefrrqz");
                         exit(EXIT_FAILURE);
