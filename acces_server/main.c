@@ -228,7 +228,7 @@ int main(int argc, char** argv)
           // a l'aide du port on trouve l'uilistaeur et on regarde maintenan si le login est dans le tableau qui a stock les login
           for(unsigned int j = 0; j < tab_user->nb_utilisateurs; j++)
           {
-            if(strcmp(list_table_user[i].login,tab_user->table[j].login))
+            if(strcmp(list_table_user[i].login,tab_user->table[j].login) == 0)
             {
               printf("login ok\n");
               //on parcourt la liste des attributs de l'user pour voir si il a le champ dans sa liste des attributs
