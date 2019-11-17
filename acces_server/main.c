@@ -13,7 +13,7 @@ int main(int argc, char** argv)
   int sock_fd;
   ssize_t size_message = 0;
   char buff[N];
-  char *strToken, *tmp;
+  char *strToken, *tmp, *tmp2;
   unsigned int i = 0;
   socklen_t server_size = sizeof(struct sockaddr_in);
   socklen_t client_size = sizeof(struct sockaddr_in);
@@ -311,11 +311,13 @@ int main(int argc, char** argv)
     if(strcmp("ecrire",strToken) == 0)
     {
       char tmp_ecrire[N]="";
-      char tmp2_ecrire[N]="";
+      char tmp2_ecrire[N]=""; // pour avoir juste age
       affiche_user(list_table_user,nb_user_connect);
       //strToken = strtok_r (NULL," :\n", &tmp);
       strcpy(tmp_ecrire,tmp);
-      printf("strttttok4 = %s\n",tmp_ecrire);
+      printf("tmp_ecrire = %s",tmp);
+      char *strToken2 = strtok_r (tmp_ecrire,"\n", &tmp2);
+      printf("strToken2 = %s",strToken2);
       strToken = strtok_r (NULL," :\n", &tmp);
       printf("strttttok2 = %s\n",strToken);
       //on regarde le port du client pour le trouver dans la liste des users connect
@@ -360,7 +362,8 @@ int main(int argc, char** argv)
                     {
                       printf("okokokokokokok2\n");
                       affiche(list_data_server,nombre_server);
-                      snprintf(buff,N+1024,"%s.%s\n",tmp_ecrire,tab_user->table[j].login);
+                      snprintf(buff,N+1024,"%s.%s\n",strToken2,tab_user->table[j].login);
+                      printf("buff = %s",buff);
                       printf("client addr port : %d\n", client_addr.sin_port);
                       //client_addr.sin_port = list_data_server[h].addr.sin_port;
                       printf("client addr port : %d\n", client_addr.sin_port);
