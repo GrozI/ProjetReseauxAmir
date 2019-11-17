@@ -234,6 +234,8 @@ int main(int argc, char** argv)
               //on parcourt la liste des attributs de l'user pour voir si il a le champ dans sa liste des attributs
               for(unsigned int k = 0; k < tab_user->table[j].taille_attributs; k++)
               {
+                printf("log = %s\n",tab_user->table[j].login);
+                printf("attr = %s\n",tab_user->table[j].attribut[k]);
                 printf("kkkk = %s\n", strToken);
                 if(strcmp(strToken,tab_user->table[j].attribut[k]) == 0)
                 {
