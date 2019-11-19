@@ -204,8 +204,8 @@ void affiche(table_server *list_data_server,int nombre_server)
   }
   for(int i= 0; i < nombre_server; i++)
   {
-    printf("port = %d\n",list_data_server[i].addr.sin_port);
-    printf("type = %s\n",list_data_server[i].type);
+    printf("server port = %d\n",list_data_server[i].addr.sin_port);
+    printf("server type = %s\n",list_data_server[i].type);
   }
 }
 
@@ -217,8 +217,8 @@ void affiche_user(table_user_connect *list_table_user,int nb_user_connect)
   }
   for(int i= 0; i < nb_user_connect; i++)
   {
-    printf("port = %d\n",list_table_user[i].addr.sin_port);
-    printf("login = %s\n",list_table_user[i].login);
+    printf("user port = %d\n",list_table_user[i].addr.sin_port);
+    printf("user login = %s\n",list_table_user[i].login);
   }
 }
 

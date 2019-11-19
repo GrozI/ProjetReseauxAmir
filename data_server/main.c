@@ -11,7 +11,7 @@
 typedef struct
 {
   char login[32];
-  int age;
+  char attribut[32];
 } User;
 
 typedef struct
@@ -35,8 +35,9 @@ int main(int argc, char**argv)
 
   int sock_fd;
   char buff[N];
-  char tmp_age[N];
-  char *strToken, *tmp;
+  char tmp_attribut[N];
+  char var_type[32];
+  char *strToken;
   socklen_t tailleu = sizeof(struct sockaddr_in);
 
   //Création de socket
@@ -72,6 +73,10 @@ int main(int argc, char**argv)
     return 1;
   }
   printf("%s\n",buff);
+  strToken = strtok(buff,":");
+  strToken = strtok(NULL,"\n");
+  strcpy(var_type,strToken);
+  printf("var_type = %s",var_type);
 
   if(recvfrom(sock_fd, buff, N, 0, (struct sockaddr *)&server_addr, &tailleu) == -1)
   {
@@ -81,29 +86,29 @@ int main(int argc, char**argv)
   printf("%s\n",buff);
 
   // il faut je reçois la liste des users !
-  strToken = strtok_r(buff,":", &tmp);
+  strToken = strtok(buff,":");
   printf("strtok = %s\n",strToken);
   int i=0;
   while(strToken != NULL)
   {
     strcpy(tab_user->table[i].login,strToken);
-    memset((int*)&tab_user->table[i].age, -1, (size_t) N);
+    strcpy(tab_user->table[i].attribut,"null");
+    //memset((int*)&tab_user->table[i].attribut, -1, (size_t) N);
     i++;
     tab_user->nb_utilisateurs++;
-    strToken = strtok_r (NULL,":", &tmp);
+    strToken = strtok (NULL,":");
   }
   printf("coucou\n");
   for(i=0; i < tab_user->nb_utilisateurs; i++)
   {
     printf("%d = %s\n",i, tab_user->table[i].login);
-    printf("%d = %d\n",i, tab_user->table[i].age);
+    printf("%d = %s\n",i, tab_user->table[i].attribut);
   }
   printf("dddddddddd\n");
+
   while(1)
   {
-    printf("bbbbbbbbbb\n");
     memset((char *)&buff, 0, (size_t) N);
-    printf("ccccccccc\n");
     if(recvfrom(sock_fd, buff, 1024, 0, (struct sockaddr *)&server_addr, &tailleu) == -1)
     {
       perror("recvfrom");
@@ -111,7 +116,7 @@ int main(int argc, char**argv)
     }
     printf("buff = %s\n",buff);
     printf("ffffffffffffff\n");
-    strToken = strtok_r(buff, " :\n", &tmp);
+    strToken = strtok(buff, " :\n");
     printf("toktok = %s %ld\n",strToken,strlen(strToken));
     // if(strcmp(NULL,strToken) == 0)
     // {
@@ -124,15 +129,15 @@ int main(int argc, char**argv)
       memset((char *)&buff, 0, (size_t) N);
       for(int i = 0; i < tab_user->nb_utilisateurs; i++)
       {
-        if(tab_user->table[i].age == -1)
+        if(strcmp(tab_user->table[i].attribut,"null") == 0)
         {
-          sprintf(tmp_age,"%s:unknown\n",tab_user->table[i].login);
+          sprintf(tmp_attribut,"%s:unknown\n",tab_user->table[i].login);
         }
         else
         {
-          sprintf(tmp_age,"%s:%u\n",tab_user->table[i].login,tab_user->table[i].age);
+          sprintf(tmp_attribut,"%s:%s\n",tab_user->table[i].login,tab_user->table[i].attribut);
         }
-        strcat(buff,tmp_age);
+        strcat(buff,tmp_attribut);
       }
       printf("buff = %s",buff);
       if (sendto(sock_fd,buff,N, 0, (struct sockaddr *)&server_addr, tailleu) == -1)
@@ -143,18 +148,69 @@ int main(int argc, char**argv)
     }
     if(strncmp("ecrire",strToken,6) == 0)
     {
+      char login[32]="";
+      char type[32]="";
+      char donnee[32]="";
       printf("je suis dans ecrire\n");
-      printf("tmp = %s",tmp);
-      char *strToken2 = strtok(tmp,":.");
-      printf("strToken2 = %s",strToken2);
-      char *strToken3 = strtok(NULL,":");
-      printf("strToken3 = %s",strToken3);
-      char *strToken4 = strtok(NULL,":");
-      printf("strToken3 = %s",strToken4);
+      printf("coucou");
+      printf("nique reseau\n");
+      strToken = strtok(NULL,".");
+      strcpy(type,strToken);
+      printf("type = %s",type);
+      strToken= strtok(NULL,".");
+      strcpy(donnee,strToken);
+      printf("donnee = %s",donnee);
+      strToken= strtok(NULL,"\n");
+      strcpy(login,strToken);
+      printf("login = %s",login);
       for(int i = 0; i < tab_user->nb_utilisateurs; i++)
       {
-        if(strcmp(strToken3,tab_user->table[i].login) == 0)
+        if(strcmp(login,tab_user->table[i].login) == 0)
         {
+            strcpy(tab_user->table[i].attribut,donnee);
+            snprintf(buff,N,"ok pour %s\n",login);
+            if (sendto(sock_fd,buff,N, 0, (struct sockaddr *)&server_addr, tailleu) == -1)
+            {
+                perror("RIP");
+                return 1;
+            }
+        }
+      }
+      printf("fjdddddddd\n");
+    }
+    if(strcmp("supprimer",strToken) ==0)
+    {
+      char login[32]="";
+      //strToken = strtok(NULL,".");
+      strToken = strtok(NULL,"\n");
+      strcpy(login,strToken);
+      for(int i = 0; i < tab_user->nb_utilisateurs; i++)
+      {
+        printf("%s\n",tab_user->table[i].login);
+        if(strcmp(login,tab_user->table[i].login) == 0)
+        {
+          int val_null = 0;
+          //printf("iiiiiiii\n");
+          if(strcmp(tab_user->table[i].attribut,"null") == 0)
+          {
+            val_null = 1;
+            snprintf(buff,N,"Rien à supprimer dans %s pour %s\n",var_type,login);
+            if (sendto(sock_fd,buff,N, 0, (struct sockaddr *)&server_addr, tailleu) == -1)
+            {
+                perror("RIP");
+                return 1;
+            }
+          }
+          if(val_null == 0)
+          {
+            strcpy(tab_user->table[i].attribut,"null");
+            snprintf(buff,N,"La suppression de %s pour %s est ok\n",var_type,login);
+            if (sendto(sock_fd,buff,N, 0, (struct sockaddr *)&server_addr, tailleu) == -1)
+            {
+                perror("RIP");
+                return 1;
+            }
+          }
         }
       }
     }

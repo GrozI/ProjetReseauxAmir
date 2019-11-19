@@ -11,9 +11,8 @@ int main(int argc, char** argv)
 {
   struct sockaddr_in server_addr,client_addr;
   int sock_fd;
-  ssize_t size_message = 0;
   char buff[N];
-  char *strToken, *tmp, *tmp2;
+  char *strToken;
   unsigned int i = 0;
   socklen_t server_size = sizeof(struct sockaddr_in);
   socklen_t client_size = sizeof(struct sockaddr_in);
@@ -83,7 +82,8 @@ int main(int argc, char** argv)
     //On affiche le contenu du message pour vérifier si c'est bien ce qu'on a envoyé
     printf("%s\n",buff);
     //On prend le premier mot du message et on l'affiche
-    strToken = strtok_r(buff, " :", &tmp);
+    strToken = strtok(buff, " :\n");
+    printf("strtoken = %s\n",strToken);
     // printf("strtok = %s\n", strToken);
     // printf("buffer = %s\n", tmp);
     //Si strToken est égale à auth alors je rentre dans la boucle
@@ -98,12 +98,12 @@ int main(int argc, char** argv)
       //On prend le prochain mot qui est le login et on le stock dans une var tmp
       //puis on va parcourir le tableau pour voir si user est dedans ou non
       //et on envoi le message
-      strToken = strtok_r (NULL,":", &tmp);
+      strToken = strtok(NULL,":");
       // printf("coucou  je suis : %s\n",strToken);
       char tmp_login[N]="";
       strncpy(tmp_login,strToken,strlen(strToken));
       // printf("strtok = %s\n",tmp_login);
-      strToken = strtok_r (NULL,":", &tmp);
+      strToken = strtok(NULL,":");
       for(i=0; i < tab_user->nb_utilisateurs; i++)
       {
         // printf("%d = %s\n",i, tab_user->table[i].login);
@@ -146,7 +146,7 @@ int main(int argc, char** argv)
     }
 
     //Si strToken est égale à bye alors je rentre dans la boucle
-    if( strncmp("bye",strToken,3) == 0)
+    else if( strncmp("bye",strToken,3) == 0)
     {
       snprintf(buff,N,"bye!\n");
       if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
@@ -158,9 +158,9 @@ int main(int argc, char** argv)
     }
 
     //Si strToken est égale à server_auth alors je rentre dans la boucle
-    if( strcmp("server_auth",strToken) == 0 && parcourir(sock_fd, buff,client_addr,list_table_user,list_data_server,nb_user_connect,nombre_server) == 0)
+    else if( strcmp("server_auth",strToken) == 0 && parcourir(sock_fd, buff,client_addr,list_table_user,list_data_server,nb_user_connect,nombre_server) == 0)
     {
-      strToken = strtok_r (NULL," :", &tmp);
+      strToken = strtok(NULL," :");
       printf("%s\n",strToken);
       //printf("%ld\n",strlen(strToken));
       char tmp2[N]="";
@@ -168,7 +168,7 @@ int main(int argc, char** argv)
       {
           strncpy(tmp2,strToken,3);
           // printf("StrToken en rentrant la boucle strcmp et avant le snprintf : %s\n",strToken);
-          snprintf(buff,N+1024,"Ok tu es le serveur : %s \n",tmp2);
+          snprintf(buff,N+1024,"Ok tu es le serveur :%s\n",tmp2);
           // printf("StrToken apres le snprintf : %s\n",strToken);
           //printf("buff = %s\n",buff);
           // printf("toz\n");
@@ -191,10 +191,17 @@ int main(int argc, char** argv)
       printf("%s\n",tmp2);
       if(strcmp("taille",strToken) == 0)
       {
-        printf("tailletaile\n");
-          // list_data_server[nombre_server].addr = client_addr;
-          // strcpy(list_data_server[nombre_server].type,"taille");
-          // nombre_server++;
+        strncpy(tmp2,strToken,6);
+        snprintf(buff,N+1024,"Ok tu es le serveur :%s\n",tmp2);
+        if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+        {
+          perror("erreur sockett sendefrrqz");
+          exit(EXIT_FAILURE);
+        }
+        copie(&client_addr,&list_data_server[nombre_server].addr);
+        strcpy(list_data_server[nombre_server].type,"taille");
+        nombre_server++;
+        affiche(list_data_server,nombre_server);
       }
       memset((char *)&buff, 0, (size_t) N);
       for(i=0; i < tab_user->nb_utilisateurs; i++)
@@ -216,12 +223,23 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
       }
     }
-    if(strcmp("lire",strToken) == 0)
+    else if(strcmp("lire",strToken) == 0)
     {
       char tmp_lire[N]="";
+      char champ[32][32]={0};
+      int cpt=0;
       affiche_user(list_table_user,nb_user_connect);
-      strToken = strtok_r (NULL," :\n", &tmp);
-      printf("strttttok = %s\n",strToken);
+      strToken = strtok(NULL," \n");
+      while(strToken != NULL)
+      {
+        printf("strttttok = %s\n",strToken);
+        strcpy(champ[cpt],strToken);
+        printf("champ : %s\n",champ[cpt]);
+        strToken = strtok(NULL," \n");
+        cpt++;
+      }
+      printf("test\n");
+      //printf("strttttok = %s\n",strToken);
       //on regarde le port du client pour le trouver dans la liste des users connect
       for(int i=0; i < nb_user_connect; i++)
       {
@@ -239,29 +257,37 @@ int main(int argc, char** argv)
               int test = 0;
               for(unsigned int k = 0; k < tab_user->table[j].taille_attributs; k++)
               {
-                printf("log = %s\n",tab_user->table[j].login);
-                printf("attr = %s %ld\n",tab_user->table[j].attribut[k],strlen(tab_user->table[j].attribut[k]));
-                printf("kkkk = %s %ld\n", strToken, strlen(strToken));
-                if(strncmp(strToken,tab_user->table[j].attribut[k],strlen(strToken)) == 0)
+                // printf("log = %s\n",tab_user->table[j].login);
+                // printf("attr = %s %ld\n",tab_user->table[j].attribut[k],strlen(tab_user->table[j].attribut[k]));
+                //if(strncmp(strToken,tab_user->table[j].attribut[k],strlen(strToken)) == 0)
+                for(int t = 0; t < cpt ; t++)
                 {
+                if(strcmp(champ[t],tab_user->table[j].attribut[k]) == 0)
+                {
+                  int serveur_connecte = 0; //tester si le serveur est co
+                  int droit =0;
                   test = 1;
-                  printf("toktok = %s\n",strToken);
-                  printf("okokokokokokok\n");
-                  strncpy(tmp_lire,strToken,strlen(strToken));
+                  //printf("toktok = %s\n",strToken);
+                  //strncpy(tmp_lire,strToken,strlen(strToken));
+                  strcpy(tmp_lire,champ[t]);
                   printf("tmp_lire = %s\n",tmp_lire);
-                  //envoyer au client qui a le droit de lire l'attribut
-                  snprintf(buff,N+1024,"OK vous avez le droit de lire %s\n",tmp_lire);
-                  if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
-                  {
-                    perror("erreur sockett sendefrrqz");
-                    exit(EXIT_FAILURE);
-                  }
                   //envoyer au BON serveur de donnée la requêtre
                   for(int h = 0; h < nombre_server; h++)
                   { //envoi de la commande et attente du resultat
                     if(strcmp(list_data_server[h].type,tmp_lire) == 0)
                     {
-                      printf("okokokokokokok2\n");
+                      if(droit == 0)
+                      {
+                        //envoyer au client qui a le droit de lire l'attribut
+                        snprintf(buff,N+1024,"OK vous avez le droit de lire %s\n",tmp_lire);
+                        if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                        {
+                          perror("erreur sockett sendefrrqz");
+                          exit(EXIT_FAILURE);
+                        }
+                      }
+                      droit = 1;
+                      serveur_connecte = 1;
                       affiche(list_data_server,nombre_server);
                       snprintf(buff,N+1024,"lire %s\n",tmp_lire);
                       printf("client addr port : %d\n", client_addr.sin_port);
@@ -275,27 +301,38 @@ int main(int argc, char** argv)
                         perror("erreur sockett sendefrrqz");
                         exit(EXIT_FAILURE);
                       }
-                      printf("aaaaaaaaaaaaa\n");
-                      printf("client addr port : %d\n", client_addr.sin_port);
+                      //printf("client addr port : %d\n", client_addr.sin_port);
                       if (recvfrom(sock_fd, buff, N, 0, (struct sockaddr *)&client_addr, &client_size) == -1)
                       {
                         perror("recvfrom");
                         return 1;
                       }
                       printf("%s\n",buff);
+
                       client_addr = list_table_user[i].addr;
                       if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
                       {
                         perror("erreur sockett sendefrrqz");
                         exit(EXIT_FAILURE);
                       }
+                      break;
+                    }
+                  }
+                  if(serveur_connecte == 0)
+                  {
+                    snprintf(buff,N,"Le serveur que vous avez indiquer est indisponible\n");
+                    if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                    {
+                      perror("erreur sockett sendefrrqz");
+                      exit(EXIT_FAILURE);
                     }
                   }
                 }
               }
+              }
               if(test == 0)
               {
-                snprintf(buff,N,"Vous ne pouvez pas lire %s\n",strToken);
+                snprintf(buff,N,"Vous ne pouvez pas lire ce champ\n");
                 if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
                 {
                   perror("erreur sockett sendefrrqz");
@@ -308,66 +345,90 @@ int main(int argc, char** argv)
       }
 
     }
-    if(strcmp("ecrire",strToken) == 0)
+    else if(strcmp("ecrire",strToken) == 0)
     {
-      char tmp_ecrire[N]="";
-      char tmp2_ecrire[N]=""; // pour avoir juste age
-      affiche_user(list_table_user,nb_user_connect);
-      //strToken = strtok_r (NULL," :\n", &tmp);
-      strcpy(tmp_ecrire,tmp);
-      printf("tmp_ecrire = %s",tmp);
-      char *strToken2 = strtok_r (tmp_ecrire,"\n", &tmp2);
-      printf("strToken2 = %s",strToken2);
-      strToken = strtok_r (NULL," :\n", &tmp);
-      printf("strttttok2 = %s\n",strToken);
+      //char tmp_type[32]=""; // pour avoir juste age
+      char donnee[32][32]={0};
+      affiche_user(list_table_user,nb_user_connect); //j'affiche la liste des users connectés
+      char champ[32][32]={0};
+      int cpt=0;
+      //printf("tmp dans ecrire = %s",tmp);
+      strToken = strtok (NULL," :");
+      while(strToken != NULL)
+      {
+        printf("ecriretoktok = %s\n",strToken);
+        strcpy(champ[cpt],strToken);
+        printf("champ : %s\n",champ[cpt]);
+        strToken = strtok(NULL," :\n");
+        if(strToken != NULL)
+        {
+          strcpy(donnee[cpt],strToken);
+          printf("donnee : %s\n",donnee[cpt]);
+          strToken = strtok(NULL," :\n");
+        }
+        cpt++;
+      }
+      //printf("tmp v2 dans ecrire = %s",tmp);
+      //printf("strToken = %s",strToken);
+      //strcpy(tmp_type,strToken); // je mets le type age/taille etc dans tmp_type
+      //printf("tmp_type = %s",tmp_type);
+
       //on regarde le port du client pour le trouver dans la liste des users connect
       for(int i=0; i < nb_user_connect; i++)
       {
         if(client_addr.sin_port == list_table_user[i].addr.sin_port)
         {
-          printf("port2 ok\n");
-          //char log[32] = list_table_user[i].login;
           // a l'aide du port on trouve l'uilistaeur et on regarde maintenan si le login est dans le tableau qui a stock les login
           for(unsigned int j = 0; j < tab_user->nb_utilisateurs; j++)
           {
             if(strcmp(list_table_user[i].login,tab_user->table[j].login) == 0)
             {
-              printf("login2 ok\n");
               //on parcourt la liste des attributs de l'user pour voir si il a le champ dans sa liste des attributs
               int test = 0;
               for(unsigned int k = 0; k < tab_user->table[j].taille_attributs; k++)
               {
                 printf("log2 = %s\n",tab_user->table[j].login);
                 printf("attr2 = %s %ld\n",tab_user->table[j].attribut[k],strlen(tab_user->table[j].attribut[k]));
-                printf("kkkk2 = %s %ld\n", strToken, strlen(strToken));
-                if(strncmp(strToken,tab_user->table[j].attribut[k],strlen(strToken)) == 0)
+                //printf("kkkk2 = %s %ld\n", tmp_type, strlen(tmp_type));
+                for(int t =0; t < cpt; t++)
+                {
+                //if(strncmp(tmp_type,tab_user->table[j].attribut[k],strlen(tmp_type)) == 0)
+                if(strcmp(champ[t],tab_user->table[j].attribut[k]) == 0)
                 {
                   test = 1;
-                  printf("toktok2 = %s\n",strToken);
-                  printf("okokokokokokok2\n");
-                  //strncpy(tmp_ecrire,strToken,strlen(strToken));
-                  printf("tmp_ecrire = %s\n",tmp_ecrire);
-                  //envoyer au client qui a le droit de lire l'attribut
-                  strcpy(tmp2_ecrire,strToken);
-                  snprintf(buff,N+1024,"OK vous avez le droit d'ecrire %s\n",strToken);
-                  if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
-                  {
-                    perror("erreur sockett sendefrrqz");
-                    exit(EXIT_FAILURE);
-                  }
+                  int serveur_connecte = 0; //tester si le serveur est co
+                  int droit =0;
+                  int envoi_ok = 0;
+                  int count_type = 0;
+                  printf("atoz\n");
+                  //strToken = strtok(NULL,"\n");
+                  //printf("strToken v2 = %s\n",strToken);
+                  //strcpy(donnee,strToken); // je mets la donnée du type dans donnee
+                  //printf("donnee = %s\n",donnee);
                   //envoyer au BON serveur de donnée la requêtre
                   for(int h = 0; h < nombre_server; h++)
                   { //envoi de la commande et attente du resultat
-                    if(strcmp(list_data_server[h].type,tmp2_ecrire) == 0)
+                    if(strcmp(list_data_server[h].type,champ[t]) == 0)
                     {
-                      printf("okokokokokokok2\n");
+                      count_type++;
+                      printf("count_type %d\n",count_type);
+                      //On donne l'autorisation au client
+                      if(droit == 0)
+                      {
+                        snprintf(buff,N,"OK vous avez le droit d'ecrire %s\n",champ[t]);
+                        if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                        {
+                          perror("erreur sockett sendefrrqz");
+                          exit(EXIT_FAILURE);
+                        }
+                      }
+                      droit = 1;
+                      serveur_connecte = 1;
                       affiche(list_data_server,nombre_server);
-                      snprintf(buff,N+1024,"ecrire %s.%s\n",strToken2,tab_user->table[j].login);
-                      printf("buff = %s",buff);
-                      printf("client addr port : %d\n", client_addr.sin_port);
-                      //client_addr.sin_port = list_data_server[h].addr.sin_port;
-                      printf("client addr port : %d\n", client_addr.sin_port);
-                      printf("server port : %d\n",list_data_server[h].addr.sin_port);
+                      snprintf(buff,N+2048,"ecrire %s.%s.%s\n",champ[t],donnee[t],tab_user->table[j].login);
+                      //printf("client addr port : %d\n", client_addr.sin_port);
+                      //printf("client addr port : %d\n", client_addr.sin_port);
+                      //printf("server port : %d\n",list_data_server[h].addr.sin_port);
                       printf("buff = %s\n",buff);
                       client_addr = list_data_server[h].addr;
                       if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
@@ -375,27 +436,46 @@ int main(int argc, char** argv)
                         perror("erreur sockett sendefrrqz");
                         exit(EXIT_FAILURE);
                       }
-                      printf("aaaaaaaaaaaaa\n");
-                      printf("client addr port : %d\n", client_addr.sin_port);
+
                       if (recvfrom(sock_fd, buff, N, 0, (struct sockaddr *)&client_addr, &client_size) == -1)
                       {
                         perror("recvfrom");
                         return 1;
                       }
                       printf("%s\n",buff);
-                      client_addr = list_table_user[i].addr;
-                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
-                      {
-                        perror("erreur sockett sendefrrqz");
-                        exit(EXIT_FAILURE);
-                      }
+                      envoi_ok++;
+                      printf("envoi_ok %d\n",envoi_ok);
                     }
+                  }
+                  printf("sc = %d\n",serveur_connecte);
+                  if(serveur_connecte == 0)
+                  {
+                    client_addr = list_table_user[i].addr;
+                    snprintf(buff,N,"Le serveur que vous avez indiquer est indisponible\n");
+                    if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                    {
+                      perror("erreur sockett sendefrrqz");
+                      exit(EXIT_FAILURE);
+                    }
+                    break;
+                  }
+                  if(serveur_connecte == 1 && envoi_ok == count_type)
+                  {
+                    printf("amir\n");
+                    client_addr = list_table_user[i].addr;
+                    if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                    {
+                      perror("erreur sockett sendefrrqz");
+                      exit(EXIT_FAILURE);
+                    }
+                    break;
                   }
                 }
               }
+              }
               if(test == 0)
               {
-                snprintf(buff,N,"Vous ne pouvez pas lire %s\n",strToken);
+                snprintf(buff,N,"Vous n'avez pas le droit pour ecrire ce champ\n");
                 if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
                 {
                   perror("erreur sockett sendefrrqz");
@@ -407,10 +487,158 @@ int main(int argc, char** argv)
         }
       }
     }
-
+    else if(strncmp("supprimer",strToken,9) == 0)
+    {
+      //char type[32]={0};
+      //strToken = strtok(NULL," \n");
+      //printf("supp strtok = %s\n",strToken);
+      //strcpy(type,strToken);
+      for(int j = 0; j < nb_user_connect; j++)
+      {
+        if(client_addr.sin_port == list_table_user[j].addr.sin_port)
+        {
+        // a l'aide du port on trouve l'uilistaeur et on regarde maintenan si le login est dans le tableau qui a stock les login
+        for(unsigned int k = 0; k < tab_user->nb_utilisateurs; k++)
+        {
+          if(strcmp(list_table_user[j].login,tab_user->table[k].login) == 0)
+          {
+            //on parcourt la liste des attributs de l'user pour voir si il a le champ dans sa liste des attributs
+            int test = 0;
+            for(unsigned int h = 0; h < tab_user->table[j].taille_attributs; h++)
+            {
+              //if(strcmp(type,tab_user->table[j].attribut[h]) == 0)
+              //{
+                test = 1;
+                int serveur_connecte = 0;
+                int droit = 0;
+                int count_type = 0;
+                int envoi_ok = 0;
+                for(int i =0; i < nombre_server; i++)
+                {
+                  if(strcmp(list_data_server[i].type,tab_user->table[j].attribut[h]) == 0)
+                  {
+                    count_type++;
+                    serveur_connecte = 1;
+                    if(droit == 0)
+                    {
+                      snprintf(buff,N,"OK vous avez le droit de supprimer\n");
+                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                      {
+                        perror("erreur sockett sendefrrqz");
+                        exit(EXIT_FAILURE);
+                        }
+                      }
+                      droit =1;
+                      snprintf(buff,N+2048,"supprimer %s\n",tab_user->table[k].login);
+                      printf("buff = %s\n",buff);
+                      client_addr = list_data_server[i].addr;
+                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                      {
+                        perror("erreur sockett sendefrrqz");
+                        exit(EXIT_FAILURE);
+                      }
+                      if (recvfrom(sock_fd, buff, N, 0, (struct sockaddr *)&client_addr, &client_size) == -1)
+                      {
+                        perror("recvfrom");
+                        return 1;
+                      }
+                      printf("%s\n",buff);
+                      envoi_ok++;
+                    }
+                  }
+                  if(serveur_connecte == 1 && envoi_ok == count_type)
+                  {
+                    client_addr = list_table_user[j].addr;
+                    strToken = strtok(buff," ");
+                    int supp_send = 0;
+                    if(strcmp("Rien",strToken) == 0)
+                    {
+                      supp_send =1;
+                      snprintf(buff,N,"Il n'y a rien à supprimer dans ce champ\n");
+                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                      {
+                        perror("erreur sockett sendefrrqz");
+                        exit(EXIT_FAILURE);
+                      }
+                    }
+                    if(supp_send == 0)
+                    {
+                      snprintf(buff,N,"La suppression est un succès\n");
+                      if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                      {
+                        perror("erreur sockett sendefrrqz");
+                        exit(EXIT_FAILURE);
+                      }
+                    }
+                  }
+                  if(serveur_connecte == 0)
+                  {
+                    snprintf(buff,N,"Le serveur que vous essayez de joindre n'est pas connecté\n");
+                    if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                    {
+                      perror("erreur sockett sendefrrqz");
+                      exit(EXIT_FAILURE);
+                    }
+                  }
+                //}
+                if(test == 0)
+                {
+                snprintf(buff,N,"Vous n'avez pas les droits pour accéder à ce champ\n");
+                if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+                {
+                  perror("erreur sockett sendefrrqz");
+                  exit(EXIT_FAILURE);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
+  else if(strncmp("aide",strToken,4) == 0)
+  {
+    snprintf(buff,N,"**Voici les syntaxes à utiliser**\n");
+    strcat(buff,"\n");
+    strcat(buff,"Pour lire un ou plusieurs champs:\n");
+    strcat(buff,"lire champ1 champ2\n");
+    strcat(buff,"Pour ecrire un ou plusieurs champs:\n");
+    strcat(buff,"ecrire champ1:donnee1 champ2:donnee2\n");
+    strcat(buff,"Pour supprimer un ou plusieurs champs:\n");
+    strcat(buff,"supprimer champ1 champ2\n");
+    strcat(buff,"Pour se deconnecter :\n");
+    strcat(buff,"bye\n");
+    if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+    {
+      perror("erreur sockett sendefrrqz");
+      exit(EXIT_FAILURE);
+    }
+  }
+  else if(strcmp("clear",strToken) == 0)
+  {
+    snprintf(buff,N,"\n");
+    for(int i = 0; i < 20; i++)
+    {
+      strcat(buff,"\n");
+    }
+    if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+    {
+      perror("erreur sockett sendefrrqz");
+      exit(EXIT_FAILURE);
+    }
+  }
+  else
+  {
+    snprintf(buff,N,"La commande que vous avez entré n'existe pas\n");
+    if( (sendto(sock_fd,buff,N,0,(struct sockaddr *)&client_addr, sizeof(client_addr))) == -1)
+    {
+      perror("erreur sockett sendefrrqz");
+      exit(EXIT_FAILURE);
+    }
+  }
+}
 
-  printf("***** Serveur hors ligne *****\n\n");
+printf("***** Serveur hors ligne *****\n\n");
 
-  return 0;
+return 0;
 }
